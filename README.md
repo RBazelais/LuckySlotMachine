@@ -37,7 +37,7 @@ The following **optional** features are implemented:
   - Modern gradient color scheme with purple, blue, and gold accents
   - Responsive design that works on desktop and mobile devices
   - Win animations with pulsing effects and celebratory messaging
-- [ X] **Interactive paytable showing current bet multipliers**
+- [X] **Interactive paytable showing current bet multipliers**
   - Side panel displaying all symbol payouts adjusted for current bet
   - Clear visual hierarchy with symbol icons and payout values
 - [X] **Comprehensive game history with detailed statistics**
@@ -49,7 +49,7 @@ The following **optional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![Video Walkthrough](./src/assets/ "Video Walkthrough")
+![Video Walkthrough](.src/assets/LuckSlotsV4.gif "Video Walkthrough")
 
 GIF created with LICECap
 
