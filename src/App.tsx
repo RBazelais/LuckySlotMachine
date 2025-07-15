@@ -8,15 +8,24 @@ const SlotMachine = () => {
 	const [isSpinning, setIsSpinning] = useState(false);
 	const [winAmount, setWinAmount] = useState(0);
 	const [lastWin, setLastWin] = useState(0);
-	const [gameHistory, setGameHistory] = useState([]);
+	const [gameHistory, setGameHistory] = useState<
+		{ spin: number; bet: number; win: number; symbols: string[] }[]
+	>([]);
 	const [spinCount, setSpinCount] = useState(0);
 
 	// Slot symbols with different probabilities
 	const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "🔔", "7️⃣"];
 	const symbolWeights = [25, 20, 18, 15, 12, 5, 3, 2]; // Higher = more common
 
-	// Enhanced payout table
-	const payouts = {
+	// Define the payout structure
+	type PayoutTable = {
+		[key: string]: {
+			2: number;
+			3: number;
+		};
+	};
+
+	const payouts: PayoutTable = {
 		"🍒": { 2: 2, 3: 5 },
 		"🍋": { 2: 3, 3: 10 },
 		"🍊": { 2: 4, 3: 15 },
@@ -109,13 +118,16 @@ const SlotMachine = () => {
 			if (winnings > 0) {
 			setCredits(prev => prev + winnings);
 			}
-	
-			// Update game history
-			setGameHistory(prev => [...prev.slice(-9), {
-			spin: spinCount + 1,
-			bet,
-			win: winnings,
-			symbols: newReels.map(i => symbols[i])
+			setGameHistory((prev) => [
+				...prev.slice(-9),
+				{
+					spin: spinCount + 1,
+					bet,
+					win: winnings,
+					symbols: newReels.map((i) => symbols[i]),
+				},
+			]);
+				symbols: newReels.map(i => symbols[i])
 			}]);
 	
 			setSpinCount(prev => prev + 1);

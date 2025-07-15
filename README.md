@@ -1,10 +1,10 @@
 # Web Development Project - *Lucky Slots*
 
-## React + TypeScript + Tailwind + Vite
-
-Made by: **[Rachel Bazelais]**
-
 This web app: **Experience the thrill of a premium casino slot machine!**
+
+## Starring: React + TypeScript + Tailwind + Vite
+
+Made by: **Rachel Bazelais**
 
 ## Required Features
 
@@ -47,7 +47,7 @@ The following **optional** features are implemented:
 
 ## Video Walkthrough
 
-Here's a walkthrough of implemented user stories:
+Here's a walkthrough of implemented features:
 
 ![Video Walkthrough](.src/assets/LuckSlotsV4.gif "Video Walkthrough")
 
