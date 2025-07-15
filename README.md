@@ -22,7 +22,7 @@ The following **required** functionality is completed:
   - 8 different symbols with varying rarity and payout rates
   - Weighted probability system for realistic casino odds
   - Two-of-a-kind and three-of-a-kind winning combinations
-- [x] **Advanced game controls and automation**
+- [ ] **Advanced game controls and automation**
   - Manual spin functionality with visual state feedback
   - Auto-play feature with automatic stopping when credits run low
   - Game reset functionality to start fresh
@@ -49,7 +49,7 @@ The following **optional** features are implemented:
 
 Here's a walkthrough of implemented features:
 
-![Video Walkthrough](.src/assets/LuckSlotsV4.gif "Video Walkthrough")
+![Video Walkthrough](src/assets/LuckSlotsV4.gif "Video Walkthrough")
 
 GIF created with LICECap
 

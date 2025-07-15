@@ -2,16 +2,16 @@ import React, { useState, useCallback } from "react";
 import { Play, TrendingUp } from "lucide-react";
 
 const SlotMachine = () => {
-	const [credits, setCredits] = useState(1000);
-	const [bet, setBet] = useState(10);
-	const [reels, setReels] = useState([0, 0, 0]);
-	const [isSpinning, setIsSpinning] = useState(false);
-	const [winAmount, setWinAmount] = useState(0);
-	const [lastWin, setLastWin] = useState(0);
+	const [credits, setCredits] = useState<number>(1000);
+	const [bet, setBet] = useState<number>(10);
+	const [reels, setReels] = useState<number[]>([0, 0, 0]);
+	const [isSpinning, setIsSpinning] = useState<boolean>(false);
+	const [winAmount, setWinAmount] = useState<number>(0);
+	const [lastWin, setLastWin] = useState<number>(0);
 	const [gameHistory, setGameHistory] = useState<
 		{ spin: number; bet: number; win: number; symbols: string[] }[]
 	>([]);
-	const [spinCount, setSpinCount] = useState(0);
+	const [spinCount, setSpinCount] = useState<number>(0);
 
 	// Slot symbols with different probabilities
 	const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "🔔", "7️⃣"];
@@ -118,21 +118,19 @@ const SlotMachine = () => {
 			if (winnings > 0) {
 			setCredits(prev => prev + winnings);
 			}
-			setGameHistory((prev) => [
-				...prev.slice(-9),
-				{
-					spin: spinCount + 1,
-					bet,
-					win: winnings,
-					symbols: newReels.map((i) => symbols[i]),
-				},
-			]);
-				symbols: newReels.map(i => symbols[i])
-			}]);
+				setGameHistory((prev) => [
+					...prev.slice(-9),
+					{
+						spin: spinCount + 1,
+						bet,
+						win: winnings,
+						symbols: newReels.map((i) => symbols[i]),
+					},
+				]);
 	
-			setSpinCount(prev => prev + 1);
-			setIsSpinning(false);
-		}, 1800);
+				setSpinCount((prev) => prev + 1);
+				setIsSpinning(false);
+			}, 1800);
 		}, [credits, bet, isSpinning, getRandomSymbol, calculateWin]);
 
 	return (
