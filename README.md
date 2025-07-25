@@ -1,6 +1,6 @@
-# Web Development Project - *Lucky Slots*
+*Lucky Slots*
 
-This web app: **Experience the thrill of a premium casino slot machine!**
+**Experience the thrill of a premium casino slot machine!**
 
 ## Starring: React + TypeScript + Tailwind + Vite
 
