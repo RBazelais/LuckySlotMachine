@@ -51,8 +51,8 @@ const SlotMachine = () => {
 	}, [autoPlay, canSpin, isSpinning, spin, setAutoPlay]);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-			<div className="max-w-4xl mx-auto">
+		<div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 bg-cover bg-center p-4">
+			<div className="max-w-4xl w-full mx-auto">
 				{/* Header */}
 				<div className="text-center mb-8">
 					<h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">
@@ -63,10 +63,10 @@ const SlotMachine = () => {
 					</p>
 				</div>
 
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center min-h-[500px]">
 					{/* Main Game Area */}
-					<div className="lg:col-span-2">
-						<div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 shadow-2xl border border-gray-700">
+					<div className="lg:col-span-2 flex flex-col items-center justify-center">
+						<div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 shadow-2xl border border-gray-700 min-h-[500px] flex flex-col justify-center">
 							{/* Credits & Bet Controls */}
 							<div className="flex justify-between items-center mb-6">
 								<div className="flex items-center space-x-4">
@@ -100,9 +100,9 @@ const SlotMachine = () => {
 							</div>
 
 							{/* Slot Machine */}
-							<div className="relative bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-xl mb-6">
-								<div className="bg-black p-4 rounded-lg">
-									<div className="flex justify-center space-x-4">
+							<div className="relative bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-xl mb-6 w-[400px] mx-auto">
+								<div className="bg-black p-4 rounded-lg w-full">
+									<div className="flex justify-center space-x-4 w-full">
 									{Array.isArray(reels) && reels.map((symbolIndex, index) => (
 										// Display each reel symbol with animation effects based on game state
 											<div
