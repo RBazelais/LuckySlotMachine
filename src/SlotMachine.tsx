@@ -99,11 +99,10 @@ const SlotMachine = () => {
 								</div>
 							</div>
 
-							{/* Slot Machine */}
 							<div className="relative bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-xl mb-6">
 								<div className="bg-black p-4 rounded-lg">
 									<div className="flex justify-center space-x-4">
-									{Array.isArray(reels) && reels.map((symbolIndex, index) => (
+									{Array.isArray(reels) && reels.length === 3 && reels.map((symbolIndex, index) => (
 										// Display each reel symbol with animation effects based on game state
 											<div
 												key={index}
@@ -113,7 +112,7 @@ const SlotMachine = () => {
 														: ""
 												} ${showWinAnimation ? "animate-pulse scale-110" : ""}`}
 											>
-												{symbols[symbolIndex]}
+												{symbols[symbolIndex] || "?"}
 											</div>
 										))}
 									</div>

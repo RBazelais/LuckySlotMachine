@@ -192,57 +192,68 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 		setWinAmount(0);
 		setShowWinAnimation(false);
 
-		const newReels = [0, 0, 0];
+		// Pre-calculate final results to avoid state conflicts
+		const finalReels = [
+			getRandomSymbol(),
+			getRandomSymbol(),
+			getRandomSymbol(),
+		];
+
 		const spinDurations = [800, 1200, 1600];
+		let completedReels = 0;
+
+		// Track animation intervals to clear them properly
+		const intervals: number[] = [];
 
 		for (let reel = 0; reel < 3; reel++) {
 			const duration = spinDurations[reel];
-			const startTime = Date.now();
+			
+			// Use setInterval for more controlled animation
+			const interval = setInterval(() => {
+				const currentReels = get().reels;
+				const updated = [...currentReels];
+				updated[reel] = Math.floor(Math.random() * symbols.length);
+				setReels(updated);
+			}, 50); // Update every 50ms for smooth animation
 
-			const animateReel = () => {
-				const elapsed = Date.now() - startTime;
-				if (elapsed < duration) {
-					setReels((prev) => {
-						const updated = [...prev];
-						updated[reel] = Math.floor(
-							Math.random() * symbols.length,
-						);
-						return updated;
+			intervals.push(interval);
+
+			// Stop animation for this reel after its duration
+			setTimeout(() => {
+				clearInterval(interval);
+				
+				// Set final result for this reel
+				const currentReels = get().reels;
+				const updated = [...currentReels];
+				updated[reel] = finalReels[reel];
+				setReels(updated);
+
+				completedReels++;
+
+				// Check if all reels are done
+				if (completedReels === 3) {
+					// Calculate and apply winnings
+					const winnings = calculateWin(finalReels);
+					setWinAmount(winnings);
+					setLastWin(winnings);
+
+					if (winnings > 0) {
+						addCredits(winnings);
+						setShowWinAnimation(true);
+						setTimeout(() => setShowWinAnimation(false), 2000);
+					}
+
+					addGameToHistory({
+						spin: get().spinCount + 1,
+						bet,
+						win: winnings,
+						symbols: finalReels.map((i) => symbols[i]),
 					});
-					requestAnimationFrame(animateReel);
-				} else {
-					newReels[reel] = getRandomSymbol();
-					setReels((prev) => {
-						const updated = [...prev];
-						updated[reel] = newReels[reel];
-						return updated;
-					});
+
+					setIsSpinning(false);
 				}
-			};
-
-			requestAnimationFrame(animateReel);
+			}, duration);
 		}
-
-		setTimeout(() => {
-			const winnings = calculateWin(newReels);
-			setWinAmount(winnings);
-			setLastWin(winnings);
-
-			if (winnings > 0) {
-				addCredits(winnings);
-				setShowWinAnimation(true);
-				setTimeout(() => setShowWinAnimation(false), 2000);
-			}
-
-			addGameToHistory({
-				spin: get().spinCount + 1,
-				bet,
-				win: winnings,
-				symbols: newReels.map((i) => symbols[i]),
-			});
-
-			setIsSpinning(false);
-		}, 1800);
 	},
 
 	// Computed values
