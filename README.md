@@ -111,20 +111,6 @@ npm run build
 npm run preview
 ```
 
-## 📱 Architecture
-
-```
-src/
-├── components/          # Game UI components
-│   ├── SlotMachine/    # Core slot machine logic
-│   ├── PayTable/       # Payout display system
-│   └── Statistics/     # Analytics dashboard
-├── hooks/              # Custom React hooks for game logic
-├── utils/              # Game mechanics and probability functions
-├── types/              # TypeScript type definitions
-└── assets/             # Static assets and animations
-```
-
 ## 🌟 Technical Specifications
 
 - **Performance**: Optimized animations for smooth gameplay on mobile devices
