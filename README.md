@@ -2,8 +2,6 @@
 
 **A premium casino slot machine experience built with modern web technologies. Features realistic gameplay mechanics, advanced animations, and comprehensive statistics tracking.**
 
-![Lucky Slots Demo](src/assets/LuckSlotsV4.gif)
-
 ## 🚀 Features
 
 ### Core Gaming Experience
@@ -21,6 +19,8 @@
 - **Responsive Design**: Seamless gameplay across desktop and mobile devices
 - **Interactive Paytable**: Live payout calculations based on current bet amount
 - **Visual Feedback**: Smooth animations, win celebrations, and state-aware UI components
+
+![Lucky Slots Demo](src/assets/LuckSlotsV4.gif)
 
 ## 🛠 Technical Stack
 
