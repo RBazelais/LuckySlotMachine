@@ -2,25 +2,28 @@
 
 **A premium casino slot machine experience built with modern web technologies. Features realistic gameplay mechanics, advanced animations, and comprehensive statistics tracking.**
 
+![Lucky Slots Demo](src/assets/LuckySlotsv5.gif)
+
 ## 🚀 Features
 
 ### Core Gaming Experience
+
 - **Authentic Slot Machine**: Three-reel slot with staggered spinning animations that mimic real casino machines
 - **Dynamic Credit System**: Start with $1000, adjustable betting from $1-$100 in $5 increments
 - **Intelligent Payout Engine**: 8 unique symbols with weighted probability distribution and realistic casino odds
 - **Advanced Game Controls**: Manual spin, auto-play functionality, and complete game reset capabilities
 
 ### Statistical Analysis & Tracking
+
 - **Real-time Analytics**: Live tracking of spins, winnings, and Return-to-Player (RTP) percentages
 - **Game History**: Comprehensive history of last 8 spins with visual win/loss indicators
 - **Performance Metrics**: Total earnings tracking and statistical analysis for gameplay optimization
 
 ### Premium User Experience
+
 - **Responsive Design**: Seamless gameplay across desktop and mobile devices
 - **Interactive Paytable**: Live payout calculations based on current bet amount
 - **Visual Feedback**: Smooth animations, win celebrations, and state-aware UI components
-
-![Lucky Slots Demo](src/assets/LuckSlotsv5.gif)
 
 ## 🛠 Technical Stack
 
@@ -33,6 +36,7 @@
 ## 💡 Technical Implementation
 
 ### Probability Engine
+
 ```typescript
 // Weighted symbol distribution system
 const symbolWeights = {
@@ -48,11 +52,13 @@ const symbolWeights = {
 ```
 
 ### Animation System
+
 - **Staggered Timing**: Authentic casino reel stopping sequence
 - **Performance Optimized**: Smooth animations without blocking the main thread
 - **State-Driven UI**: Real-time visual feedback based on game state transitions
 
 ### Game Mechanics
+
 - **Fair Odds System**: Mathematically balanced for engaging gameplay
 - **Multiple Win Types**: Two-of-a-kind and three-of-a-kind combinations
 - **Credit Management**: Automatic bet validation and balance tracking
@@ -61,16 +67,19 @@ const symbolWeights = {
 ## 🎮 Game Features
 
 ### Betting & Payouts
+
 - **Flexible Betting**: $1 minimum to $100 maximum in $5 increments
 - **Dynamic Payouts**: Payouts scale with bet amount for consistent risk/reward
 - **Instant Results**: Immediate credit updates and win calculations
 
 ### Statistical Dashboard
+
 - **Live Metrics**: Real-time spin count, last win, and total earnings
 - **Performance Tracking**: RTP percentage for strategy analysis
 - **Game History**: Visual log of recent spins with outcome indicators
 
 ### User Interface
+
 - **Modern Design**: Premium gradient themes with gold and purple accents
 - **Intuitive Controls**: Clear betting controls and game state indicators
 - **Mobile Optimized**: Touch-friendly interface with responsive layouts
@@ -78,6 +87,7 @@ const symbolWeights = {
 ## 🎯 Development Highlights
 
 **Technical Achievements**:
+
 - Built complex animation system with precise timing control
 - Implemented mathematically sound probability distribution
 - Created responsive design system with Tailwind CSS utilities
@@ -85,6 +95,7 @@ const symbolWeights = {
 - Integrated TypeScript for enhanced code reliability and maintainability
 
 **Problem-Solving**:
+
 - **Animation Timing**: Solved staggered reel stopping with async/await patterns
 - **Performance**: Optimized rendering for smooth 60fps gameplay
 - **State Management**: Coordinated multiple game systems (betting, spinning, scoring)
@@ -139,14 +150,14 @@ npm run preview
 - **Jackpot Odds**: 0.008% chance for triple sevens (777)
 - **Maximum Payout**: 500x bet amount for triple sevens
 
-## 📊 Demo
+<!-- ## 📊 Demo -->
 
-Experience the slot machine: [View Demo](src/assets/LuckySlotsv5.gif)
+<!-- Experience the slot machine: [View Demo](src/assets/LuckySlotsv5.gif) -->
 
 ## 📄 License
 
 ```
-Copyright 2025 Rachel Bazelais
+Copyright 2026 Rachel Bazelais
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
