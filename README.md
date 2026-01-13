@@ -141,7 +141,7 @@ npm run preview
 
 ## 📊 Demo
 
-Experience the slot machine: [View Demo](src/assets/LuckSlotsV4.gif)
+Experience the slot machine: [View Demo](src/assets/LuckySlotsv5.gif)
 
 ## 📄 License
 
