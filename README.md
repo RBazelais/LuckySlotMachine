@@ -20,7 +20,7 @@
 - **Interactive Paytable**: Live payout calculations based on current bet amount
 - **Visual Feedback**: Smooth animations, win celebrations, and state-aware UI components
 
-![Lucky Slots Demo](src/assets/LuckSlotsV4.gif)
+![Lucky Slots Demo](src/assets/LuckSlotsv5.gif)
 
 ## 🛠 Technical Stack
 

@@ -14,7 +14,9 @@ const SlotMachine = () => {
 		gameHistory,
 		spinCount,
 		autoPlay,
+		autoPlayDelay,
 		showWinAnimation,
+		spinningReels,
 
 		// Constants
 		symbols,
@@ -25,6 +27,7 @@ const SlotMachine = () => {
 		spin,
 		resetGame,
 		setAutoPlay,
+		setAutoPlayDelay,
 
 		// Computed values
 		getRTP,
@@ -32,11 +35,12 @@ const SlotMachine = () => {
 		canSpin,
 	} = useSlotMachineStore();
 
-	// Auto-play effect
+	// Auto-play effect: continue spinning until user stops or credits run out
 	useEffect(() => {
 		if (!autoPlay) return;
 
-		if (!canSpin()) {
+		// Only cancel autoplay when the player truly can't continue (insufficient credits)
+		if (credits < bet) {
 			setAutoPlay(false);
 			return;
 		}
@@ -45,14 +49,14 @@ const SlotMachine = () => {
 			if (!isSpinning) {
 				spin();
 			}
-		}, 2000);
+		}, autoPlayDelay);
 
 		return () => clearTimeout(timer);
-	}, [autoPlay, canSpin, isSpinning, spin, setAutoPlay]);
+	}, [autoPlay, isSpinning, spin, setAutoPlay, credits, bet, autoPlayDelay]);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-			<div className="max-w-4xl mx-auto">
+		<div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 w-full">
+			<div className="w-full px-4">
 				{/* Header */}
 				<div className="text-center mb-8">
 					<h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">
@@ -102,19 +106,19 @@ const SlotMachine = () => {
 							<div className="relative bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-xl mb-6">
 								<div className="bg-black p-4 rounded-lg">
 									<div className="flex justify-center space-x-4">
-									{Array.isArray(reels) && reels.length === 3 && reels.map((symbolIndex, index) => (
-										// Display each reel symbol with animation effects based on game state
-											<div
-												key={index}
-												className={`w-24 h-24 bg-white rounded-lg flex items-center justify-center text-4xl font-bold shadow-inner transition-all duration-300 ${
-													isSpinning
-														? "animate-bounce"
-														: ""
-												} ${showWinAnimation ? "animate-pulse scale-110" : ""}`}
-											>
-												{symbols[symbolIndex] || "?"}
-											</div>
-										))}
+										{Array.isArray(reels) && reels.length === 3 &&
+											reels.map((symbolIndex, index) => (
+												<div
+													key={index}
+													className={`w-36 h-36 md:w-48 md:h-48 bg-white rounded-lg flex items-center justify-center text-5xl md:text-6xl font-bold shadow-inner transition-transform duration-300 ${
+														spinningReels[index]
+														? "scale-105 opacity-95"
+														: "scale-100"
+													} ${showWinAnimation ? "animate-pulse scale-110" : ""}`}
+												>
+													{symbols[symbolIndex] || "?"}
+												</div>
+											))}
 									</div>
 								</div>
 
@@ -127,11 +131,11 @@ const SlotMachine = () => {
 							</div>
 
 							{/* Control Buttons */}
-							<div className="flex justify-center space-x-4 mb-6">
+							<div className="flex flex-wrap justify-center gap-4 mb-6">
 								<button
 									onClick={spin}
 									disabled={!canSpin()}
-									className={`flex items-center space-x-2 px-8 py-3 rounded-lg font-bold text-lg transition-all duration-200 ${
+									className={`flex items-center space-x-2 whitespace-nowrap px-8 py-3 rounded-lg font-bold text-lg transition-all duration-200 ${
 										!canSpin()
 											? "bg-gray-600 cursor-not-allowed"
 											: "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transform hover:scale-105"
@@ -145,7 +149,7 @@ const SlotMachine = () => {
 
 								<button
 									onClick={() => setAutoPlay(!autoPlay)}
-									className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-bold transition-all duration-200 ${
+									className={`flex items-center space-x-2 whitespace-nowrap px-6 py-3 rounded-lg font-bold transition-all duration-200 ${
 										autoPlay
 											? "bg-red-600 hover:bg-red-700"
 											: "bg-blue-600 hover:bg-blue-700"
@@ -161,9 +165,25 @@ const SlotMachine = () => {
 									</span>
 								</button>
 
+								{/* Auto-play delay selector */}
+								<div className="flex items-center space-x-2">
+									<label className="text-sm text-gray-300">Delay:</label>
+									<select
+										value={autoPlayDelay}
+										onChange={(e) => setAutoPlayDelay(Number(e.target.value))}
+										className="bg-gray-700 text-white px-2 py-1 rounded"
+									>
+										<option value={500}>0.5s</option>
+										<option value={1000}>1s</option>
+										<option value={1500}>1.5s</option>
+										<option value={2000}>2s</option>
+										<option value={3000}>3s</option>
+									</select>
+								</div>
+
 								<button
 									onClick={resetGame}
-									className="flex items-center space-x-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-bold transition-all duration-200 shadow-lg"
+									className="flex items-center space-x-2 whitespace-nowrap px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-bold transition-all duration-200 shadow-lg"
 								>
 									<RotateCcw className="w-5 h-5" />
 									<span>RESET</span>
@@ -209,37 +229,7 @@ const SlotMachine = () => {
 					</div>
 
 					{/* Sidebar */}
-					<div className="space-y-6">
-						{/* Paytable */}
-						<div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 shadow-2xl border border-gray-700">
-							<h2 className="text-xl font-bold text-white mb-4 flex items-center">
-								<Star className="w-5 h-5 mr-2 text-yellow-400" />
-								Paytable
-							</h2>
-							<div className="space-y-2">
-								{Object.entries(payouts).map(
-									([symbol, payout]) => (
-										<div
-											key={symbol}
-											className="flex justify-between items-center text-sm"
-										>
-											<span className="flex items-center">
-												<span className="text-xl mr-2">
-													{symbol}
-												</span>
-												<span className="text-gray-300">
-													x3
-												</span>
-											</span>
-											<span className="text-yellow-400 font-bold">
-												${payout[3] * bet}
-											</span>
-										</div>
-									),
-								)}
-							</div>
-						</div>
-
+					<div className="space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
 						{/* Recent Games */}
 						<div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 shadow-2xl border border-gray-700">
 							<h2 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -267,19 +257,33 @@ const SlotMachine = () => {
 												</span>
 											</div>
 											<div className="flex justify-center space-x-1">
-												{game.symbols.map(
-													(symbol, i) => (
-														<span
-															key={i}
-															className="text-lg"
-														>
-															{symbol}
-														</span>
-													),
-												)}
-											</div>
+												{game.symbols.map((symbol, i) => (
+													<span key={i} className="text-lg">
+														{symbol}
+													</span>
+												))}
 										</div>
-									))}
+									</div>
+								))}
+							</div>
+						</div>
+
+						{/* Paytable */}
+						<div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 shadow-2xl border border-gray-700">
+							<h2 className="text-xl font-bold text-white mb-4 flex items-center">
+								<Star className="w-5 h-5 mr-2 text-yellow-400" />
+								Paytable
+							</h2>
+							<div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+								{Object.entries(payouts).map(([symbol, payout]) => (
+									<div key={symbol} className="flex justify-between items-center text-sm">
+										<span className="flex items-center">
+											<span className="text-xl mr-2">{symbol}</span>
+											<span className="text-gray-300">x3</span>
+										</span>
+										<span className="text-yellow-400 font-bold">${payout[3] * bet}</span>
+									</div>
+								))}
 							</div>
 						</div>
 					</div>

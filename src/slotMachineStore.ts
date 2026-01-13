@@ -8,7 +8,6 @@ interface GameResult {
 }
 
 interface SlotMachineStore {
-	// State
 	credits: number;
 	bet: number;
 	reels: number[];
@@ -18,14 +17,14 @@ interface SlotMachineStore {
 	gameHistory: GameResult[];
 	spinCount: number;
 	autoPlay: boolean;
+	autoPlayDelay: number;
 	showWinAnimation: boolean;
+	spinningReels: boolean[];
 
-	// Constants
 	symbols: string[];
 	symbolWeights: number[];
 	payouts: Record<string, { 2: number; 3: number }>;
 
-	// Actions
 	setCredits: (credits: number) => void;
 	setBet: (bet: number) => void;
 	setReels: (reels: number[]) => void;
@@ -35,28 +34,26 @@ interface SlotMachineStore {
 	setGameHistory: (gameHistory: GameResult[]) => void;
 	setSpinCount: (spinCount: number) => void;
 	setAutoPlay: (autoPlay: boolean) => void;
+	setAutoPlayDelay: (delay: number) => void;
 	setShowWinAnimation: (showWinAnimation: boolean) => void;
+	setSpinningReel: (index: number, spinning: boolean) => void;
 
-	// Game actions
 	adjustBet: (amount: number) => void;
 	addCredits: (amount: number) => void;
 	deductBet: () => void;
 	addGameToHistory: (gameData: GameResult) => void;
 	resetGame: () => void;
 
-	// Game logic
 	getRandomSymbol: () => number;
 	calculateWin: (reelResults: number[]) => number;
 	spin: () => Promise<void>;
 
-	// Computed values
 	getRTP: () => number;
 	getTotalWon: () => number;
 	canSpin: () => boolean;
 }
 
 const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
-	// Game state
 	credits: 1000,
 	bet: 10,
 	reels: [0, 0, 0],
@@ -66,9 +63,10 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 	gameHistory: [],
 	spinCount: 0,
 	autoPlay: false,
+	autoPlayDelay: 2000,
 	showWinAnimation: false,
+	spinningReels: [false, false, false],
 
-	// Symbols and payouts
 	symbols: ["🍒", "🍋", "🍊", "🍇", "⭐", "💎", "🔔", "7️⃣"],
 	symbolWeights: [25, 20, 18, 15, 12, 5, 3, 2],
 	payouts: {
@@ -82,7 +80,6 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 		"7️⃣": { 2: 100, 3: 500 },
 	},
 
-	// State setters
 	setCredits: (credits) => set({ credits }),
 	setBet: (bet) => set({ bet }),
 	setReels: (reels) => set({ reels }),
@@ -92,9 +89,15 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 	setGameHistory: (gameHistory) => set({ gameHistory }),
 	setSpinCount: (spinCount) => set({ spinCount }),
 	setAutoPlay: (autoPlay) => set({ autoPlay }),
+	setAutoPlayDelay: (delay) => set({ autoPlayDelay: delay }),
 	setShowWinAnimation: (showWinAnimation) => set({ showWinAnimation }),
+	setSpinningReel: (index, spinning) =>
+		set((state) => {
+			const updated = [...state.spinningReels];
+			updated[index] = spinning;
+			return { spinningReels: updated };
+		}),
 
-	// Game actions
 	adjustBet: (amount) =>
 		set((state) => ({
 			bet: Math.max(1, Math.min(100, state.bet + amount)),
@@ -128,17 +131,13 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 			spinCount: 0,
 			autoPlay: false,
 			showWinAnimation: false,
+			spinningReels: [false, false, false],
 		}),
 
-	// Game logic
 	getRandomSymbol: () => {
 		const { symbolWeights } = get();
-		const totalWeight = symbolWeights.reduce(
-			(sum, weight) => sum + weight,
-			0,
-		);
+		const totalWeight = symbolWeights.reduce((sum, w) => sum + w, 0);
 		let random = Math.random() * totalWeight;
-
 		for (let i = 0; i < symbolWeights.length; i++) {
 			random -= symbolWeights[i];
 			if (random <= 0) return i;
@@ -148,23 +147,18 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 
 	calculateWin: (reelResults) => {
 		const { symbols, payouts, bet } = get();
-		const symbolCounts: Record<string, number> = {};
-
-		reelResults.forEach((symbolIndex) => {
-			const symbol = symbols[symbolIndex];
-			symbolCounts[symbol] = (symbolCounts[symbol] || 0) + 1;
+		const counts: Record<string, number> = {};
+		reelResults.forEach((ri) => {
+			const s = symbols[ri];
+			counts[s] = (counts[s] || 0) + 1;
 		});
-
-		let totalWin = 0;
-		Object.entries(symbolCounts).forEach(([symbol, count]) => {
+		let total = 0;
+		Object.entries(counts).forEach(([symbol, count]) => {
 			if (count >= 2 && payouts[symbol]) {
-				totalWin +=
-					payouts[symbol][count as keyof (typeof payouts)[string]] *
-					bet;
+				total += payouts[symbol][count as keyof (typeof payouts)[string]] * get().bet;
 			}
 		});
-
-		return totalWin;
+		return total;
 	},
 
 	spin: async () => {
@@ -183,6 +177,7 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 			setWinAmount,
 			setLastWin,
 			setShowWinAnimation,
+			setSpinningReel,
 		} = get();
 
 		if (credits < bet || isSpinning) return;
@@ -192,88 +187,64 @@ const useSlotMachineStore = create<SlotMachineStore>((set, get) => ({
 		setWinAmount(0);
 		setShowWinAnimation(false);
 
-		// Pre-calculate final results to avoid state conflicts
-		const finalReels = [
-			getRandomSymbol(),
-			getRandomSymbol(),
-			getRandomSymbol(),
-		];
-
+		const finalReels = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
 		const spinDurations = [800, 1200, 1600];
-		let completedReels = 0;
-
-		// Track animation intervals to clear them properly
-		const intervals: number[] = [];
 
 		for (let reel = 0; reel < 3; reel++) {
 			const duration = spinDurations[reel];
-			
-			// Use setInterval for more controlled animation
+			setSpinningReel(reel, true);
+
 			const interval = setInterval(() => {
-				const currentReels = get().reels;
-				const updated = [...currentReels];
+				const current = get().reels;
+				const updated = [...current];
 				updated[reel] = Math.floor(Math.random() * symbols.length);
 				setReels(updated);
-			}, 50); // Update every 50ms for smooth animation
+			}, 50);
 
-			intervals.push(interval);
-
-			// Stop animation for this reel after its duration
-			setTimeout(() => {
-				clearInterval(interval);
-				
-				// Set final result for this reel
-				const currentReels = get().reels;
-				const updated = [...currentReels];
-				updated[reel] = finalReels[reel];
-				setReels(updated);
-
-				completedReels++;
-
-				// Check if all reels are done
-				if (completedReels === 3) {
-					// Calculate and apply winnings
-					const winnings = calculateWin(finalReels);
-					setWinAmount(winnings);
-					setLastWin(winnings);
-
-					if (winnings > 0) {
-						addCredits(winnings);
-						setShowWinAnimation(true);
-						setTimeout(() => setShowWinAnimation(false), 2000);
-					}
-
-					addGameToHistory({
-						spin: get().spinCount + 1,
-						bet,
-						win: winnings,
-						symbols: finalReels.map((i) => symbols[i]),
-					});
-
-					setIsSpinning(false);
-				}
-			}, duration);
+			await new Promise<void>((resolve) => {
+				setTimeout(() => {
+					clearInterval(interval as unknown as number);
+					const current = get().reels;
+					const updated = [...current];
+					updated[reel] = finalReels[reel];
+					setReels(updated);
+					setSpinningReel(reel, false);
+					resolve();
+				}, duration);
+			});
 		}
+
+		const winnings = calculateWin(finalReels);
+		setWinAmount(winnings);
+		if (winnings > 0) {
+			setLastWin(winnings);
+			addCredits(winnings);
+			setShowWinAnimation(true);
+			setTimeout(() => setShowWinAnimation(false), 2000);
+		}
+
+		addGameToHistory({
+			spin: get().spinCount + 1,
+			bet,
+			win: winnings,
+			symbols: finalReels.map((i) => symbols[i]),
+		});
+
+		setIsSpinning(false);
 	},
 
-	// Computed values
 	getRTP: () => {
 		const state = get();
-		const totalWon = state.gameHistory.reduce(
-			(sum, game) => sum + game.win,
-			0,
-		);
+		const totalWon = state.gameHistory.reduce((s, g) => s + g.win, 0);
 		const totalBet = Math.max(state.gameHistory.length * state.bet, 1);
 		return Math.round((totalWon / totalBet) * 100);
 	},
 
-	getTotalWon: () => {
-		return get().gameHistory.reduce((sum, game) => sum + game.win, 0);
-	},
+	getTotalWon: () => get().gameHistory.reduce((sum, g) => sum + g.win, 0),
 
 	canSpin: () => {
-		const state = get();
-		return state.credits >= state.bet && !state.isSpinning;
+		const s = get();
+		return s.credits >= s.bet && !s.isSpinning;
 	},
 }));
 
